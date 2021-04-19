@@ -199,3 +199,204 @@ order by
  </code>
 </pre>
 ----------------------------------------------------------------------------------------
+__where 절 문법__
+
+<pre>
+<code>
+select 
+	COLUMN_1,
+	COLUMN_2
+from 
+	TABLE_NAME
+where	
+	<조건>
+;
+ </code>
+</pre>
+----------------------------------------------------------------------------------------
+<pre>
+<code>
+연산자
+= : 같음
+> : ~보다 큰
+< : ~보다 작은
+>= : ~보다 크거나 같은
+<= : ~보다 작거나 같은
+<>, != : ~가 아닌
+and : 그리고
+or : 혹은
+ </code>
+</pre>
+
+----------------------------------------------------------------------------------------
+<pre>
+<code>
+select 	
+	LAST_NAME, --3
+	FIRST_NAME
+from 
+	customer  --1
+where
+	FIRST_NAME='Jamie';			--2	-- FIRST_NAME아 'Jamie'인 행을 출력함
+ </code>
+</pre>
+----------------------------------------------------------------------------------------
+<pre>
+<code>	
+select 
+	LAST_NAME,
+	FIRST_NAME
+from 
+	customer 
+where
+	FIRST_NAME='Jamie'			--FIRST_NAME이 'Jamie'이면서
+and LAST_NAME ='Rice';			--LAST_NAME이 'Rice'인 행을 출력함
+ </code>
+</pre>
+-----------------------------------------------------------------------------------------
+<pre>
+<code>
+select 
+	CUSTOMER_ID,
+	AMOUNT,
+	PAYMENT_DATE
+from 	
+	PAYMENT 
+where
+	AMOUNT <= 1					--AMOUNT가 1이하 이거나
+	or AMOUNT >=8 ;				--AMOUNT가 8이상인 행을 출력
+ </code>
+</pre>
+------------------------------------------------------------------------------------------
+	
+__limit 절 문법__
+<pre>
+<code>
+-- 특정 집합을 출력시 출력하는 행의 수를 한정하는 역할을 한다. 부분 범위 처리시 사용된다. PostgreSQL, MySQL 등에서 지원한다.
+ </code>
+</pre>
+
+<pre>
+<code>
+select 
+	*
+from 	
+	TABLE_NAME
+limit N;			--출력하는 행의 수를 지정한다.
+ </code>
+</pre>
+--------------------------------------------------------------------------------------------
+<pre>
+<code>
+select 
+	*
+from 
+	TABLE_NAME
+limit N offset M;			--출력하는 행의 수를 지정하면서 시작위치를 지정한다. offset M 값의 시작위치는 0이다.
+ </code>
+</pre>
+--------------------------------------------------------------------------------------------
+<pre>
+<code>
+select 
+	FILM_ID,
+	TITLE,
+	RELEASE_YEAR
+from 	
+	FILM								
+order by FILM_ID			--FILM_ID로 정렬한다ㅣ
+	limit 5;				--정렬한 값 중에서 결과 건수는 5건수로 제한한다.
+ </code>
+</pre>	
+---------------------------------------------------------------------------------------------
+<pre>
+<code>	
+select 
+	FILM_ID,
+	TITLE,
+	RELEASE_YEAR
+from 
+	FILM
+order by FILM_ID				--FILM_ID로 정렬한다.
+	limit 4						--정렬한 값 중에서 결과 건수는 4건으로 제한한다.
+	offset 3;					--FILM_ID로 정렬한 값 중에서 출력행의 시작위치는 3이다.(시작위치 3은 0,1,2,3 즉 4번째 행부터 시작)
+ </code>
+</pre>
+----------------------------------------------------------------------------------------------
+<pre>
+<code>
+select 
+	FILM_ID,
+	TITLE,
+	RENTAL_RATE
+from 
+	FILM
+order by RENTAL_RATE desc			-- RENTA_RATE를 내림차순으로 정렬한다.
+limit 10;							-- 정렬한 값 중에서 최소 10건 만을 출력한다.
+ </code>
+</pre>
+-----------------------------------------------------------------------------------------------
+
+__fetch 절 문법__
+<pre>
+<code>
+--특정 집합을 출력 시 출력하는 행의 수를 한정하는 역할을 한다. 부분 범위 처리시 사용된다.
+ </code>
+</pre>
+<pre>
+<code>
+select 
+	*
+from 
+	TABLE_NAME
+fetch first [N] row only;	-- 출력하는 행의 수를 지정한다. N을 입력하지 않고 ROW ONLY만 입력하면 단 한건만 출력된다.
+ </code>
+</pre>
+------------------------------------------------------------------------------------------------
+<pre>
+<code>
+select 
+	*
+from 
+	TABLE_NAME
+offset [N] rows					--출력하는 행의 수를 지정하면서 시작위치를 지정한다. offset N 값의 시작위치는 0이다.
+	fetch first [N] row only; 
+ </code>
+</pre>	
+-------------------------------------------------------------------------------------------------
+<pre>
+<code>
+select 
+	FILM_ID,
+	TITLE
+from 
+	FILM
+order by TITLE				--TITLE로 정렬한 집합 중에서
+fetch first row only;	--최초의 단 한 건의 행을 리턶나다.
+ </code>
+</pre>
+-------------------------------------------------------------------------------------------------
+<pre>
+<code>
+select 
+	*
+from 
+	FILM
+order by TITLE				--TITLE로 정렬한 집합중에서
+fetch first 1 row only;		--최초의 단 한 건의 행을 리턴한다.
+ </code>
+</pre>
+-------------------------------------------------------------------------------------------------
+<pre>
+<code>
+select 	
+	FILM_ID,
+	TITLE
+from 	
+	FILM
+order by TITLE				--TITLE로 정렬한 집합중에서
+	offset 5 rows			--6번째 행부터
+fetch first 5 row only;		--5건의 행을 리턴한다.
+ </code>
+</pre>
+

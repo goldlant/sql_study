@@ -399,4 +399,343 @@ order by TITLE				--TITLE로 정렬한 집합중에서
 fetch first 5 row only;		--5건의 행을 리턴한다.
  </code>
 </pre>
+---------------------------------------------------------------------------------------------------
+__IN 연산자 문법__
+<pre>
+<code>
+--특정 집합(컬럼 혹은 리스트)에서 특정 집합 혹은 리스트가 존재하는지 판단하는 연산자
+ </code>
+</pre>
+<pre>
+<code>
+select 	
+	*
+from 
+	TABLE_NAME
+where
+	COLUMN_NAME in (VALUE1, VALUE2,...)		--COLUMN_NAME이 가지고 있는 집합에서 VALUE1, VALUE2등의 값이 존재하는지 확인
+ </code>
+</pre>	
+-----------------------------------------------------------------------------------------------------
+<pre>
+<code>
+select 
+	*
+from 
+	TABLE_NAME
+where COLUMN_NAME in 						--COLUMN_NAME이 가지고 있는 집합에서 TABLE_NAME2 테이블의 COLUMN_NAME2의 집합이 존재하는지 확인
+(select COLUMN_NAME2 from TABLE_NAME2)
+ </code>
+</pre>
+------------------------------------------------------------------------------------------------------
+<pre>
+<code>
+select
+	CUSTOMER_ID,
+	RENTAL_ID,
+	RETURN_DATE
+from 
+	RENTAL
+where
+	CUSTOMER_ID in (1,2)			--CUSTOMER_ID가 1혹은 2인 행을 출력한다.
+order by RETURN_DATE desc;			--그 결과를 RETURN_DATE 컬럼 내림차순으로 출력한다.
 
+-- 가독성, 알아보기 쉽다.
+-- (DBMS 최적화기, SQL 최적화) 옵티마이저 특성상 IN조건이 OR 보다 성능상 유리할때가 많다.
+ </code>
+</pre>
+-------------------------------------------------------------------------------------------------------
+<pre>
+<code>
+select 
+	CUSTOMER_ID,
+	RENTAL_ID,
+	RETURN_DATE
+from 
+	RENTAL
+where
+	CUSTOMER_ID =1 or CUSTOMER_ID=2			-- CUSTOEMR_ID가 1혹은 2인 행을 출력한다.
+order by RETURN_DATE desc;					-- 그 결과를 RETURN_DATE 컬럼 내림차순으로 출려한다.
+ </code>
+</pre>
+--------------------------------------------------------------------------------------------------------
+<pre>
+<code>
+select 
+	CUSTOMER_ID,
+	RENTAL_ID,
+	RETURN_DATE
+from 
+	RENTAL
+where
+	CUSTOMER_ID not in (1,2)			--1혹은 2가 아닌거 == 1과 2를 제외한 나머지 전부
+order by RETURN_DATE desc;
+ </code>
+</pre>
+----------------------------------------------------------------------------------------------------------
+<pre>
+<code>
+-- NOT IN 연산자는 'AND' && '<>'과 같다.
+select 
+	CUSTOMER_ID,
+	RENTAL_ID,
+	RETURN_DATE
+from 
+	RENTAL
+where 
+	CUSTOMER_ID <> 1 and CUSTOMER_ID <>2
+order by RETURN_DATE desc;
+ </code>
+</pre>
+----------------------------------------------------------------------------------------------------------
+<pre>
+<code>
+select 	
+	CUSTOMER_ID
+from 
+	RENTAL
+where
+	cast (RETURN_DATE as DATE) ='2005-05-27'	--RETURN_DATE가 2005년 5월 27일인 CUSTOMER_ID를 출력한다.	
+ </code>
+</pre>
+----------------------------------------------------------------------------------------------------------	
+<pre>
+<code>
+select 	
+	FIRST_NAME, LAST_NAME
+from 
+	CUSTOMER
+where 
+	CUSTOMER_ID IN(				--RETURN_DATE가 2005년 5월 27일인 CUSTOMER_ID의 FIRST_NAME, LAST_NAME을 출력한다.
+					select 
+						CUSTOMER_ID
+					from
+						RENTAL
+					where
+						cast(RETURN_DATE as DATE) ='2005-05-27');		--RETURN_DATE가 2005년 5월 27일인 CUSTOMER_ID를 출력함
+ </code>
+</pre>
+----------------------------------------------------------------------------------------------------------						
+__between 연산자 문법__
+<pre>
+<code>
+--특정 집합에서 어떠한 컬럼의 값이 특정 범위안에 들어가는 집합을 출력하는 연산자
+ </code>
+</pre>
+<pre>
+<code>
+select 
+	*
+from 
+	TABLE_NAME
+where 						--COLUMN_NAME 컬럼의 값이 VALUE_A와 VALUE_B 사이에 있는 집합을 출력한다.
+	COLUMN_NAME						
+between VALUE_A and VALUE_B;	--즉 COLUMN_NAME은 VALUE_A보다 크거나 같고 VALUE_B보다는 작거나 같다.
+ </code>
+</pre>
+-----------------------------------------------------------------------------------------------------------
+<pre>
+<code>
+select 
+	*
+from 
+	TABLE_NAME
+where 						--COLUMN_NAME 컬럼의 값이 VALUE_A와 VALUE_B 사이에 있지 않는 집합을 출력한다.
+	COLUMN_NAME						
+not between VALUE_A and VALUE_B;	--즉 COLUMN_NAME은 VALUE_A보다 작거나(혹은) VALUE_B보다는 크다.
+ </code>
+</pre>
+-----------------------------------------------------------------------------------------------------------
+<pre>
+<code>
+select 
+	CUSTOMER_ID,
+	PAYMENT_ID,
+	AMOUNT
+from 	
+	PAYMENT
+where AMOUNT between 8 and 9;   --AMOUNT가 8부터9사이인 집합을 출력한다.
+ </code>
+</pre>
+-----------------------------------------------------------------------------------------------------------
+<pre>
+<code>
+select 
+	CUSTOMER_ID,
+	PAYMENT_ID,
+	AMOUNT
+from 	
+	PAYMENT
+where AMOUNT not between 8 and 9;   --AMOUNT가 8부터9사이가 아닌 집합을 출력한다.
+ </code>
+</pre>
+-----------------------------------------------------------------------------------------------------------
+<pre>
+<code>
+select 
+	CUSTOMER_ID,
+	PAYMENT_ID,
+	AMOUNT,
+	PAYMENT_DATE
+from 	
+	PAYMENT
+where
+	CAST(PAYMENT_DATE as DATE)	-- = TO_CHAR(PAYMENT_DATE,'YYYY--MM--DD')   PAYMENT_DATE가 2007년 2월 7일부터 2007년 2월 15일 데이터를 추출함
+	between '2007-02-07' and '2007-02-15';
+ </code>
+</pre>
+------------------------------------------------------------------------------------------------------------
+__like 연산자 문법__
+<pre>
+<code>
+--특정 집합에서 어떠한 컬럼의 값이 특정 값과 유사한 패턴을 갖는 집합을 출력하는 연산자
+ </code>
+</pre>
+<pre>
+<code>
+select 
+	*
+from 
+	TABLE_NAME
+where COLUMN_NAME
+
+like 특정패턴			--COLUMN_NAME 컬럼의 값이 특정 패턴과 유사한 집합을 출력한다.
+ </code>
+</pre>
+-------------------------------------------------------------------------------------------------------------
+<pre>
+<code>
+select 
+	*
+from 
+	TABLE_NAME
+where COLUMN_NAME
+not like 특정패턴			--COLU,N_NAME 컬럼의 값이 특정 패턴과 유사하지 않는 집합을 출력한다.
+
+--특정 패턴에서 '%'는 어떤 문자 혹은 문자열이든지 매칭 되었다고 판단한다.
+--특정 패턴에서 '_'는 한개의 문자가 어떤 문자이든지 매칭 되었다고 판단한다.
+ </code>
+</pre>
+-------------------------------------------------------------------------------------------------------------
+<pre>
+<code>
+select 
+	FIRST_NAME,
+	LAST_NAME
+from 
+	CUSTOMER
+where
+	FIRST_NAME like 'Jen%';
+ </code>
+</pre>
+-------------------------------------------------------------------------------------------------------------
+<pre>
+<code>
+select 
+	'FOO' like 'FOO',	--true 'FOO'는 'FOO'이므로 참이다
+	'FOO' like 'F%',	--'F%'는 'F'로 시작하면 모두 참이다
+	'FOO' like '_O_',	--'_O_'는 3자리 문자열이고 가운데 문자가 'O'라면 모두 참이다.
+	'BAR' like 'B_'	;	--'B_'는 2자리 문자열이고 'B'로 시작하기만 하면 두번째 문자는 무엇이든 간에 참이다. 하지만 'BAR'는 'B'로 시작하긴 했지만 3자리 이므로 거짓이다.
+ </code>
+</pre>
+-------------------------------------------------------------------------------------------------------------
+<pre>
+<code>
+select 
+	FIRST_NAME,
+	LAST_NAME
+from 	
+	CUSTOMER
+where
+	FIRST_NAME like '%er%'	--FIRST_NAME에 'er'이 존재하는 모든 집합을 출력한다.
+</code>
+</pre>
+-------------------------------------------------------------------------------------------------------------	
+<pre>
+<code>
+select 
+	FIRST_NAME,
+	LAST_NAME
+from 
+	CUSTOMER
+where
+	FIRST_NAME like '_her%'	--첫번째 문자가 어떠한 문자로 시작 가능하지만 그 다음이 'her'이어야 하고 그 다음에는 어떤 문자 혹은 문자열이어도 상관없는 집합이 출력된다.
+ </code>
+</pre>
+--------------------------------------------------------------------------------------------------------------
+__is null 연잔자 문법__
+<pre>
+<code>
+-- 특정 컬럼 혹은 값이 널 값인지 아닌지를 판단하는 연산자이다. IS NULL 혹은 IS NOT NULL로 널 유무를 판단한다.
+
+select 
+	*
+from TABLE_NAME
+where COLUMN_NAME is null --COLUMN_NAME 컬럼의 값이 널인 집합을 출력한다.
+ </code>
+</pre>
+----------------------------------------------------------------------------------------------------------------
+<pre>
+<code>
+select 
+	*
+from TABLE_NAME
+where COLUMN_NAME is not null --COLUMN_NAME 컬럼의 값이 널이 아닌 집합을 출력한다.
+ </code>
+</pre>
+----------------------------------------------------------------------------------------------------------------
+<pre>
+<code>
+create table CONTACTS
+(
+	ID INT generated by default as identity,
+	FIRST_NAME VARCHAR(50) not null,
+	LAST_NAME VARCHAR(50) not null,
+	EMAIL VARCHAR(255) not null,
+	PHONE VARCHAR(15),
+	primary key (ID)
+
+);
+
+insert 
+into
+	CONTACTS(FIRST_NAME,LAST_NAME,EMAIL,PHONE)
+values
+	('Jhon','Doe','john.doe@example.com',NULL),
+	('Lily','Bush','lily.bush@example.com','(408-234-2764');
+commit;
+
+select 	
+	*
+from 
+	CONTACTS;
+ </code>
+</pre>
+----------------------------------------------------------------------------------------------------------------
+<pre>
+<code>
+select 
+	ID,
+	FIRST_NAME,
+	LAST_NAME,
+	EMAIL,
+	PHONE
+from 
+	contacts
+where PHONE is null --PHONE컬럼의 값이 NULL인 집합을 출력하고자 한다.
+ </code>
+</pre>
+----------------------------------------------------------------------------------------------------------------
+<pre>
+<code>
+select 
+	ID,
+	FIRST_NAME,
+	LAST_NAME,
+	EMAIL,
+	PHONE
+from 
+	contacts
+where PHONE is not null --PHONE컬럼의 값이 NULL이 아닌 집합을 출력하고자 한다.
+ </code>
+</pre>
